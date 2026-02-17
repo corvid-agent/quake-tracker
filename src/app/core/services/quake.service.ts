@@ -22,9 +22,7 @@ export class QuakeService {
   readonly error = signal<string | null>(null);
   readonly metadata = signal<{ generated: number; count: number; title: string } | null>(null);
 
-  constructor(private http: HttpClient) {
-    this.loadFeed('all_day');
-  }
+  constructor(private http: HttpClient) {}
 
   loadFeed(feed: string): void {
     const file = FEED_MAP[feed];

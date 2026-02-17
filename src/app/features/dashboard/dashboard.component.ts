@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { QuakeService } from '../../core/services/quake.service';
 import { FilterService } from '../../core/services/filter.service';
@@ -297,10 +297,16 @@ import { FormsModule } from '@angular/forms';
     }
   `],
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
   readonly quakeService = inject(QuakeService);
   readonly filterService = inject(FilterService);
   private readonly router = inject(Router);
+
+  ngOnInit(): void {
+    if (this.quakeService.earthquakes().length === 0) {
+      this.quakeService.loadFeed('all_day');
+    }
+  }
 
   readonly timeOptions = [
     { value: 'hour' as const, label: 'Hour' },
