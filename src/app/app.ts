@@ -1,0 +1,148 @@
+import { Component } from '@angular/core';
+import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  template: `
+    <header class="top-bar">
+      <div class="logo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M2 12h3l3-9 4 18 4-18 3 9h3"/>
+        </svg>
+        <span>quake-tracker</span>
+      </div>
+      <nav class="desktop-nav">
+        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Dashboard</a>
+        <a routerLink="/stats" routerLinkActive="active">Stats</a>
+        <a routerLink="/settings" routerLinkActive="active">Settings</a>
+      </nav>
+    </header>
+
+    <main class="content">
+      <router-outlet />
+    </main>
+
+    <nav class="bottom-nav">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M2 12h3l3-9 4 18 4-18 3 9h3"/>
+        </svg>
+        <span>Dashboard</span>
+      </a>
+      <a routerLink="/stats" routerLinkActive="active" class="nav-item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="12" width="4" height="8"/><rect x="10" y="8" width="4" height="12"/><rect x="17" y="4" width="4" height="16"/>
+        </svg>
+        <span>Stats</span>
+      </a>
+      <a routerLink="/settings" routerLinkActive="active" class="nav-item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.73 12.73l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+        <span>Settings</span>
+      </a>
+    </nav>
+  `,
+  styles: [`
+    :host {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-md) var(--space-lg);
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      color: var(--accent);
+      font-weight: 700;
+      font-size: var(--fs-lg);
+    }
+
+    .desktop-nav {
+      display: flex;
+      gap: var(--space-lg);
+    }
+
+    .desktop-nav a {
+      color: var(--text-secondary);
+      font-size: var(--fs-sm);
+      font-weight: 500;
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-sm);
+      transition: all 0.2s;
+    }
+
+    .desktop-nav a:hover {
+      color: var(--text-primary);
+    }
+
+    .desktop-nav a.active {
+      color: var(--accent);
+      background: rgba(78, 205, 196, 0.1);
+    }
+
+    .content {
+      flex: 1;
+      padding: var(--space-lg);
+      padding-bottom: 80px;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .bottom-nav {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border);
+      padding: var(--space-sm) 0;
+      z-index: 100;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      color: var(--text-tertiary);
+      font-size: var(--fs-xs);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-item.active {
+      color: var(--accent);
+    }
+
+    @media (max-width: 768px) {
+      .desktop-nav { display: none; }
+      .bottom-nav {
+        display: flex;
+        justify-content: space-around;
+      }
+      .content {
+        padding: var(--space-md);
+        padding-bottom: 80px;
+      }
+    }
+  `],
+})
+export class App {}
