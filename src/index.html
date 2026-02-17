@@ -6,8 +6,19 @@
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <script>
+    window.onerror = function(msg, url, line, col, error) {
+      document.getElementById('qt-err').style.display = 'block';
+      document.getElementById('qt-err').textContent = msg + '\n' + url + ':' + line + ':' + col + '\n' + (error && error.stack || '');
+    };
+    window.addEventListener('unhandledrejection', function(e) {
+      document.getElementById('qt-err').style.display = 'block';
+      document.getElementById('qt-err').textContent = 'Promise rejection: ' + e.reason + '\n' + (e.reason && e.reason.stack || '');
+    });
+  </script>
 </head>
 <body>
+  <pre id="qt-err" style="display:none;color:#ff6b6b;padding:20px;font-size:14px;background:#0f1117;white-space:pre-wrap"></pre>
   <app-root>
     <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;color:#4ecdc4;font-family:system-ui">
       <p>Loading QuakeTracker...</p>
