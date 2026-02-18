@@ -23,8 +23,8 @@
   --space-2xl: 48px;
   --font-mono: 'SF Mono', 'Fira Code', monospace;
   --font-sans: system-ui, -apple-system, sans-serif;
-  --fs-xs: 0.75rem;
-  --fs-sm: 0.85rem;
+  --fs-xs: 0.875rem;
+  --fs-sm: 0.9375rem;
   --fs-base: 0.9rem;
   --fs-md: 1rem;
   --fs-lg: 1.15rem;
@@ -79,4 +79,17 @@ a:hover {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-tertiary);
+}
+
+/* ── Accessibility (WCAG AA) ── */
+:focus-visible {
+    outline: 3px solid currentColor;
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
 }
