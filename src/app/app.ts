@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { NotificationService } from './core/services/notification.service';
 
 @Component({
   selector: 'app-root',
@@ -17,7 +18,12 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
         <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Dashboard</a>
         <a routerLink="/stats" routerLinkActive="active">Stats</a>
         <a routerLink="/compare" routerLinkActive="active">Compare</a>
-        <a routerLink="/settings" routerLinkActive="active">Settings</a>
+        <a routerLink="/settings" routerLinkActive="active" class="settings-link">
+          Settings
+          @if (notificationService.enabled()) {
+            <span class="notif-indicator" [attr.title]="'Notifications active'"></span>
+          }
+        </a>
       </nav>
     </header>
 
@@ -49,6 +55,9 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
           <circle cx="12" cy="12" r="3"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.73 12.73l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
         </svg>
         <span>Settings</span>
+        @if (notificationService.enabled()) {
+          <span class="notif-indicator-mobile"></span>
+        }
       </a>
     </nav>
   `,
@@ -103,6 +112,32 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
       background: rgba(78, 205, 196, 0.1);
     }
 
+    .settings-link {
+      position: relative;
+    }
+
+    .notif-indicator {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 6px rgba(107, 203, 119, 0.6);
+      margin-left: 2px;
+      vertical-align: top;
+    }
+
+    .notif-indicator-mobile {
+      position: absolute;
+      top: 2px;
+      right: -4px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 6px rgba(107, 203, 119, 0.6);
+    }
+
     .content {
       flex: 1;
       padding: var(--space-lg);
@@ -133,6 +168,7 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
       font-size: var(--fs-xs);
       text-decoration: none;
       transition: color 0.2s;
+      position: relative;
     }
 
     .nav-item.active {
@@ -152,4 +188,6 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
     }
   `],
 })
-export class App {}
+export class App {
+  readonly notificationService = inject(NotificationService);
+}

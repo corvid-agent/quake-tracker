@@ -1,5 +1,6 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FilterService } from '../../core/services/filter.service';
+import { NotificationService } from '../../core/services/notification.service';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -10,6 +11,99 @@ import { FormsModule } from '@angular/forms';
     <div class="settings-page">
       <h1 class="page-title">Settings</h1>
 
+      <!-- Notifications -->
+      <div class="settings-card">
+        <h2 class="section-title">
+          <svg class="section-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+          Notifications
+        </h2>
+        <p class="section-desc">Get browser alerts when earthquakes above your magnitude threshold occur near your location.</p>
+
+        @if (notificationService.permissionState() === 'unavailable') {
+          <div class="status-banner status-error">
+            Your browser does not support the Notifications API.
+          </div>
+        } @else if (notificationService.permissionState() === 'denied') {
+          <div class="status-banner status-error">
+            Notifications are blocked. Please allow notifications for this site in your browser settings.
+          </div>
+        } @else {
+          <label class="toggle-option">
+            <span>Enable earthquake alerts</span>
+            <div
+              class="toggle"
+              [class.active]="notificationService.enabled()"
+              (click)="notificationService.toggleEnabled(!notificationService.enabled())">
+              <div class="toggle-thumb"></div>
+            </div>
+          </label>
+
+          @if (notificationService.enabled()) {
+            <div class="notification-settings">
+              <div class="status-banner" [class.status-active]="notificationService.hasLocation()" [class.status-warning]="notificationService.locationError()">
+                <span class="status-dot" [class.active]="notificationService.hasLocation()"></span>
+                {{ notificationService.statusText() }}
+              </div>
+
+              @if (notificationService.hasLocation()) {
+                <p class="location-info">
+                  Location: {{ notificationService.userLat()!.toFixed(2) }}, {{ notificationService.userLng()!.toFixed(2) }}
+                </p>
+              }
+
+              <div class="notification-control">
+                <label class="control-label">Minimum magnitude</label>
+                <div class="range-control">
+                  <input
+                    type="range"
+                    [min]="1"
+                    [max]="8"
+                    [step]="0.5"
+                    [ngModel]="notificationService.magnitudeThreshold()"
+                    (ngModelChange)="notificationService.setMagnitudeThreshold($event)" />
+                  <div class="range-labels">
+                    <span>1.0</span>
+                    <span class="range-current">M{{ notificationService.magnitudeThreshold().toFixed(1) }}+</span>
+                    <span>8.0</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="notification-control">
+                <label class="control-label">Alert radius</label>
+                <div class="range-control">
+                  <input
+                    type="range"
+                    [min]="50"
+                    [max]="2000"
+                    [step]="50"
+                    [ngModel]="notificationService.radiusKm()"
+                    (ngModelChange)="notificationService.setRadiusKm($event)" />
+                  <div class="range-labels">
+                    <span>50 km</span>
+                    <span class="range-current">{{ notificationService.radiusKm() }} km</span>
+                    <span>2000 km</span>
+                  </div>
+                </div>
+              </div>
+
+              @if (notificationService.lastCheckTime(); as lastCheck) {
+                <p class="last-check">
+                  Last checked: {{ formatTime(lastCheck) }}
+                  @if (notificationService.nearbyCount() > 0) {
+                    &mdash; {{ notificationService.nearbyCount() }} nearby quake{{ notificationService.nearbyCount() === 1 ? '' : 's' }}
+                  }
+                </p>
+              }
+            </div>
+          }
+        }
+      </div>
+
+      <!-- Feed Selection -->
       <div class="settings-card">
         <h2 class="section-title">Feed Selection</h2>
         <p class="section-desc">Choose the time window for earthquake data.</p>
@@ -31,6 +125,7 @@ import { FormsModule } from '@angular/forms';
         </div>
       </div>
 
+      <!-- Magnitude Filter -->
       <div class="settings-card">
         <h2 class="section-title">Magnitude Filter</h2>
         <p class="section-desc">Filter earthquakes by minimum magnitude.</p>
@@ -50,6 +145,7 @@ import { FormsModule } from '@angular/forms';
         </div>
       </div>
 
+      <!-- Auto-Refresh -->
       <div class="settings-card">
         <h2 class="section-title">Auto-Refresh</h2>
         <p class="section-desc">Automatically refresh earthquake data periodically.</p>
@@ -88,6 +184,14 @@ import { FormsModule } from '@angular/forms';
       font-size: var(--fs-lg);
       font-weight: 600;
       margin-bottom: var(--space-xs);
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .section-icon {
+      color: var(--accent);
+      flex-shrink: 0;
     }
 
     .section-desc {
@@ -204,9 +308,87 @@ import { FormsModule } from '@angular/forms';
       font-style: italic;
       margin-top: var(--space-sm);
     }
+
+    /* Notification-specific styles */
+    .notification-settings {
+      margin-top: var(--space-lg);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .notification-control {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+
+    .control-label {
+      font-size: var(--fs-sm);
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .status-banner {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-md);
+      font-size: var(--fs-sm);
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+    }
+
+    .status-banner.status-active {
+      border-color: var(--success);
+      background: rgba(107, 203, 119, 0.08);
+      color: var(--success);
+    }
+
+    .status-banner.status-warning {
+      border-color: var(--warning);
+      background: rgba(255, 217, 61, 0.08);
+      color: var(--warning);
+    }
+
+    .status-banner.status-error {
+      border-color: var(--danger);
+      background: rgba(255, 107, 107, 0.08);
+      color: var(--danger);
+      margin-bottom: var(--space-sm);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-tertiary);
+      flex-shrink: 0;
+    }
+
+    .status-dot.active {
+      background: var(--success);
+      box-shadow: 0 0 6px rgba(107, 203, 119, 0.5);
+    }
+
+    .location-info {
+      font-size: var(--fs-xs);
+      color: var(--text-tertiary);
+      font-family: var(--font-mono);
+    }
+
+    .last-check {
+      font-size: var(--fs-xs);
+      color: var(--text-tertiary);
+      padding-top: var(--space-sm);
+      border-top: 1px solid var(--border);
+    }
   `],
 })
 export class SettingsComponent {
+  readonly filterService = inject(FilterService);
+  readonly notificationService = inject(NotificationService);
   readonly autoRefresh = signal(false);
 
   readonly feedOptions = [
@@ -216,5 +398,7 @@ export class SettingsComponent {
     { value: 'month' as const, label: 'Past Month', desc: 'Events from the last 30 days' },
   ];
 
-  constructor(public filterService: FilterService) {}
+  formatTime(timestamp: number): string {
+    return new Date(timestamp).toLocaleTimeString();
+  }
 }
