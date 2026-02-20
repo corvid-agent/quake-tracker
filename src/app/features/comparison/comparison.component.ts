@@ -31,7 +31,7 @@ const FEED_BASE = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/';
       } @else {
         <div class="comp-grid">
           <!-- Delta cards -->
-          <div class="delta-row">
+          <div class="delta-row" role="region" aria-label="Comparison metrics">
             <div class="delta-card">
               <span class="delta-label">Event Frequency</span>
               <span class="delta-value" [class]="freqDeltaClass()">
@@ -59,9 +59,9 @@ const FEED_BASE = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/';
           </div>
 
           <!-- Magnitude distribution comparison -->
-          <div class="stat-section">
+          <section class="stat-section" aria-label="Magnitude distribution comparison">
             <h2 class="section-title">Magnitude Distribution — Today vs 30-Day Average</h2>
-            <div class="dist-chart">
+            <div class="dist-chart" role="img" aria-label="Chart comparing today's magnitude distribution to the 30-day average">
               @for (range of distComparison(); track range.label) {
                 <div class="dist-row">
                   <span class="dist-label">{{ range.label }}</span>
@@ -78,28 +78,32 @@ const FEED_BASE = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/';
                 </div>
               }
             </div>
-            <div class="dist-legend">
+            <div class="dist-legend" aria-hidden="true">
               <span class="legend-item"><span class="legend-dot current-dot"></span> Today</span>
               <span class="legend-item"><span class="legend-dot baseline-dot"></span> 30-day avg/day</span>
             </div>
-          </div>
+          </section>
 
           <!-- Activity level indicator -->
-          <div class="stat-section">
+          <section class="stat-section" aria-label="Seismic activity level">
             <h2 class="section-title">Activity Level</h2>
-            <div class="activity-meter">
+            <div class="activity-meter" role="meter"
+                 [attr.aria-valuenow]="activityPct()"
+                 aria-valuemin="0"
+                 aria-valuemax="100"
+                 [attr.aria-label]="'Seismic activity level: ' + activityClass()">
               <div class="meter-track">
                 <div class="meter-fill" [style.width.%]="activityPct()" [class]="activityClass()"></div>
               </div>
-              <div class="meter-labels">
+              <div class="meter-labels" aria-hidden="true">
                 <span>Quiet</span>
                 <span>Normal</span>
                 <span>Elevated</span>
                 <span>High</span>
               </div>
             </div>
-            <p class="activity-text">{{ activityText() }}</p>
-          </div>
+            <p class="activity-text" aria-live="polite">{{ activityText() }}</p>
+          </section>
         </div>
       }
     </div>

@@ -12,9 +12,9 @@ import { DatePipe } from '@angular/common';
   standalone: true,
   imports: [MagnitudeBadgeComponent, RelativeTimePipe, LoadingSpinnerComponent, DatePipe],
   template: `
-    <div class="detail-page">
-      <button class="back-btn" (click)="goBack()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <article class="detail-page" aria-label="Earthquake details">
+      <button class="back-btn" (click)="goBack()" aria-label="Go back to dashboard">
+        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M15 18l-6-6 6-6"/>
         </svg>
         Back
@@ -23,7 +23,7 @@ import { DatePipe } from '@angular/common';
       @if (loading()) {
         <app-loading-spinner />
       } @else if (error()) {
-        <div class="error-card">
+        <div class="error-card" role="alert">
           <p>{{ error() }}</p>
         </div>
       } @else if (quake()) {
@@ -36,55 +36,56 @@ import { DatePipe } from '@angular/common';
             </div>
           </div>
 
-          <div class="detail-grid">
+          <dl class="detail-grid">
             <div class="detail-item">
-              <span class="detail-label">Time</span>
-              <span class="detail-value">{{ quake()!.time | date:'medium' }}</span>
-              <span class="detail-sub">{{ quake()!.time | relativeTime }}</span>
+              <dt class="detail-label">Time</dt>
+              <dd class="detail-value">{{ quake()!.time | date:'medium' }}</dd>
+              <dd class="detail-sub">{{ quake()!.time | relativeTime }}</dd>
             </div>
             <div class="detail-item">
-              <span class="detail-label">Depth</span>
-              <span class="detail-value">{{ quake()!.depth.toFixed(1) }} km</span>
+              <dt class="detail-label">Depth</dt>
+              <dd class="detail-value">{{ quake()!.depth.toFixed(1) }} km</dd>
             </div>
             <div class="detail-item">
-              <span class="detail-label">Type</span>
-              <span class="detail-value">{{ quake()!.type }}</span>
+              <dt class="detail-label">Type</dt>
+              <dd class="detail-value">{{ quake()!.type }}</dd>
             </div>
             <div class="detail-item">
-              <span class="detail-label">Coordinates</span>
-              <span class="detail-value mono">
+              <dt class="detail-label">Coordinates</dt>
+              <dd class="detail-value mono">
                 {{ quake()!.coordinates[1].toFixed(4) }}, {{ quake()!.coordinates[0].toFixed(4) }}
-              </span>
+              </dd>
             </div>
             <div class="detail-item">
-              <span class="detail-label">Tsunami Warning</span>
-              <span class="detail-value" [class.tsunami]="quake()!.tsunamiFlag">
+              <dt class="detail-label">Tsunami Warning</dt>
+              <dd class="detail-value" [class.tsunami]="quake()!.tsunamiFlag">
                 {{ quake()!.tsunamiFlag ? 'Yes' : 'No' }}
-              </span>
+              </dd>
             </div>
             @if (quake()!.felt !== null) {
               <div class="detail-item">
-                <span class="detail-label">Felt Reports</span>
-                <span class="detail-value">{{ quake()!.felt }}</span>
+                <dt class="detail-label">Felt Reports</dt>
+                <dd class="detail-value">{{ quake()!.felt }}</dd>
               </div>
             }
             @if (quake()!.alert) {
               <div class="detail-item">
-                <span class="detail-label">Alert Level</span>
-                <span class="detail-value alert-{{ quake()!.alert }}">{{ quake()!.alert }}</span>
+                <dt class="detail-label">Alert Level</dt>
+                <dd class="detail-value alert-{{ quake()!.alert }}">{{ quake()!.alert }}</dd>
               </div>
             }
-          </div>
+          </dl>
 
           <a class="usgs-link" [href]="quake()!.url" target="_blank" rel="noopener noreferrer">
             View on USGS
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/>
             </svg>
+            <span class="sr-only">(opens in new tab)</span>
           </a>
         </div>
       }
-    </div>
+    </article>
   `,
   styles: [`
     .detail-page {
@@ -102,12 +103,30 @@ import { DatePipe } from '@angular/common';
       font-size: var(--fs-base);
       cursor: pointer;
       margin-bottom: var(--space-lg);
-      padding: var(--space-sm) 0;
+      padding: var(--space-sm) var(--space-md);
+      min-height: 44px;
+      min-width: 44px;
+      border-radius: var(--radius-sm);
     }
 
     .back-btn:hover {
       color: var(--accent-hover);
     }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    dl { margin: 0; }
+    dd { margin: 0; }
 
     .detail-card {
       background: var(--bg-surface);
@@ -188,6 +207,7 @@ import { DatePipe } from '@angular/common';
       font-size: var(--fs-sm);
       font-weight: 500;
       transition: all 0.2s;
+      min-height: 44px;
     }
 
     .usgs-link:hover {

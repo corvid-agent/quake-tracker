@@ -7,56 +7,56 @@ import { NotificationService } from './core/services/notification.service';
   standalone: true,
   imports: [RouterOutlet, RouterLink, RouterLinkActive],
   template: `
-    <header class="top-bar">
-      <div class="logo">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <header class="top-bar" aria-label="Site header">
+      <a routerLink="/" class="logo" aria-label="QuakeTracker home">
+        <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M2 12h3l3-9 4 18 4-18 3 9h3"/>
         </svg>
         <span>quake-tracker</span>
-      </div>
-      <nav class="desktop-nav">
+      </a>
+      <nav class="desktop-nav" aria-label="Main navigation">
         <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Dashboard</a>
         <a routerLink="/stats" routerLinkActive="active">Stats</a>
         <a routerLink="/compare" routerLinkActive="active">Compare</a>
         <a routerLink="/settings" routerLinkActive="active" class="settings-link">
           Settings
           @if (notificationService.enabled()) {
-            <span class="notif-indicator" [attr.title]="'Notifications active'"></span>
+            <span class="notif-indicator" aria-label="Notifications active"></span>
           }
         </a>
       </nav>
     </header>
 
-    <main class="content">
+    <main id="main-content" class="content" aria-label="Page content">
       <router-outlet />
     </main>
 
-    <nav class="bottom-nav">
+    <nav class="bottom-nav" aria-label="Mobile navigation">
       <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M2 12h3l3-9 4 18 4-18 3 9h3"/>
         </svg>
         <span>Dashboard</span>
       </a>
       <a routerLink="/stats" routerLinkActive="active" class="nav-item">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="3" y="12" width="4" height="8"/><rect x="10" y="8" width="4" height="12"/><rect x="17" y="4" width="4" height="16"/>
         </svg>
         <span>Stats</span>
       </a>
       <a routerLink="/compare" routerLinkActive="active" class="nav-item">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M18 20V10M12 20V4M6 20v-6"/>
         </svg>
         <span>Compare</span>
       </a>
       <a routerLink="/settings" routerLinkActive="active" class="nav-item">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="3"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.73 12.73l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
         </svg>
         <span>Settings</span>
         @if (notificationService.enabled()) {
-          <span class="notif-indicator-mobile"></span>
+          <span class="notif-indicator-mobile" aria-label="Notifications active"></span>
         }
       </a>
     </nav>
@@ -87,6 +87,8 @@ import { NotificationService } from './core/services/notification.service';
       color: var(--accent);
       font-weight: 700;
       font-size: var(--fs-lg);
+      text-decoration: none;
+      min-height: 44px;
     }
 
     .desktop-nav {
@@ -98,9 +100,12 @@ import { NotificationService } from './core/services/notification.service';
       color: var(--text-secondary);
       font-size: var(--fs-sm);
       font-weight: 500;
-      padding: var(--space-xs) var(--space-sm);
+      padding: var(--space-sm) var(--space-md);
       border-radius: var(--radius-sm);
       transition: all 0.2s;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
     }
 
     .desktop-nav a:hover {
@@ -169,6 +174,10 @@ import { NotificationService } from './core/services/notification.service';
       text-decoration: none;
       transition: color 0.2s;
       position: relative;
+      min-height: 44px;
+      min-width: 44px;
+      justify-content: center;
+      padding: var(--space-xs) var(--space-sm);
     }
 
     .nav-item.active {

@@ -4,8 +4,8 @@ import { Component } from '@angular/core';
   selector: 'app-loading-spinner',
   standalone: true,
   template: `
-    <div class="spinner-container">
-      <div class="spinner"></div>
+    <div class="spinner-container" role="status" aria-label="Loading seismic data">
+      <div class="spinner" aria-hidden="true"></div>
       <span class="spinner-text">Loading seismic data...</span>
     </div>
   `,

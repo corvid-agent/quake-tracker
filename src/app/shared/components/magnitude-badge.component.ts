@@ -4,7 +4,7 @@ import { Component, Input } from '@angular/core';
   selector: 'app-magnitude-badge',
   standalone: true,
   template: `
-    <span class="mag-badge" [style.background]="getColor()">
+    <span class="mag-badge" [style.background]="getColor()" [attr.aria-label]="'Magnitude ' + formatMag()" role="img">
       {{ formatMag() }}
     </span>
   `,

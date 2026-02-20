@@ -13,31 +13,37 @@ import { FormsModule } from '@angular/forms';
   imports: [MagnitudeBadgeComponent, RelativeTimePipe, LoadingSpinnerComponent, FormsModule],
   template: `
     <div class="dashboard">
-      <div class="controls">
-        <div class="feed-selector">
+      <div class="controls" role="toolbar" aria-label="Earthquake filters">
+        <div class="feed-selector" role="group" aria-label="Time range">
           @for (option of timeOptions; track option.value) {
             <button
               class="feed-btn"
               [class.active]="filterService.timeRange() === option.value"
+              [attr.aria-pressed]="filterService.timeRange() === option.value"
               (click)="filterService.setTimeRange(option.value)">
               {{ option.label }}
             </button>
           }
         </div>
         <div class="mag-filter">
-          <label>Min Mag:</label>
+          <label for="mag-range">Min Mag:</label>
           <input
+            id="mag-range"
             type="range"
             [min]="0"
             [max]="10"
             [step]="0.5"
+            [attr.aria-valuenow]="filterService.minMagnitude()"
+            [attr.aria-valuemin]="0"
+            [attr.aria-valuemax]="10"
+            aria-label="Minimum magnitude filter"
             [ngModel]="filterService.minMagnitude()"
             (ngModelChange)="filterService.setMagnitudeRange($event, filterService.maxMagnitude())" />
-          <span class="mag-value">{{ filterService.minMagnitude().toFixed(1) }}</span>
+          <span class="mag-value" aria-live="polite">{{ filterService.minMagnitude().toFixed(1) }}</span>
         </div>
       </div>
 
-      <div class="stats-cards">
+      <div class="stats-cards" role="region" aria-label="Earthquake statistics">
         <div class="stat-card">
           <span class="stat-value">{{ filteredQuakes().length }}</span>
           <span class="stat-label">Total Quakes</span>
@@ -55,16 +61,21 @@ import { FormsModule } from '@angular/forms';
       @if (quakeService.loading()) {
         <app-loading-spinner />
       } @else if (quakeService.error()) {
-        <div class="error-card">
-          <span class="error-icon">!</span>
+        <div class="error-card" role="alert">
+          <span class="error-icon" aria-hidden="true">!</span>
           <p>{{ quakeService.error() }}</p>
           <button class="retry-btn" (click)="quakeService.loadFeed(quakeService.feedUrl())">Retry</button>
         </div>
       } @else {
-        <div class="quake-list">
+        <div class="quake-list" role="list" aria-label="Earthquake list">
           <h2 class="section-title">Recent Earthquakes</h2>
           @for (quake of filteredQuakes(); track quake.id) {
-            <div class="quake-item" (click)="goToDetail(quake.id)">
+            <a class="quake-item"
+               role="listitem"
+               [attr.aria-label]="'Magnitude ' + quake.magnitude.toFixed(1) + ' earthquake, ' + quake.place"
+               (click)="goToDetail(quake.id)"
+               (keydown.enter)="goToDetail(quake.id)"
+               tabindex="0">
               <app-magnitude-badge [magnitude]="quake.magnitude" />
               <div class="quake-info">
                 <span class="quake-place">{{ quake.place }}</span>
@@ -72,14 +83,14 @@ import { FormsModule } from '@angular/forms';
                   <span class="quake-time">{{ quake.time | relativeTime }}</span>
                   <span class="quake-depth">{{ quake.depth.toFixed(1) }} km deep</span>
                   @if (quake.tsunamiFlag) {
-                    <span class="tsunami-flag">TSUNAMI</span>
+                    <span class="tsunami-flag" role="status">TSUNAMI</span>
                   }
                 </div>
               </div>
-              <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg aria-hidden="true" class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M9 18l6-6-6-6"/>
               </svg>
-            </div>
+            </a>
           } @empty {
             <div class="empty-state">
               <p>No earthquakes match your filters.</p>
@@ -121,6 +132,8 @@ import { FormsModule } from '@angular/forms';
       border-radius: var(--radius-sm);
       cursor: pointer;
       transition: all 0.2s;
+      min-height: 44px;
+      min-width: 44px;
     }
 
     .feed-btn:hover {
@@ -204,9 +217,13 @@ import { FormsModule } from '@angular/forms';
       padding: var(--space-md);
       cursor: pointer;
       transition: all 0.2s;
+      min-height: 44px;
+      text-decoration: none;
+      color: inherit;
     }
 
-    .quake-item:hover {
+    .quake-item:hover,
+    .quake-item:focus-visible {
       border-color: var(--accent);
       background: var(--bg-raised);
     }
@@ -278,6 +295,9 @@ import { FormsModule } from '@angular/forms';
       border-radius: var(--radius-sm);
       font-weight: 600;
       cursor: pointer;
+      min-height: 44px;
+      min-width: 44px;
+      font-size: var(--fs-sm);
     }
 
     .empty-state {

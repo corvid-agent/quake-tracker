@@ -16,13 +16,16 @@ import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner
         <app-loading-spinner />
       } @else {
         <div class="stats-grid">
-          <div class="stat-section">
+          <section class="stat-section" aria-label="Magnitude distribution">
             <h2 class="section-title">Magnitude Distribution</h2>
-            <div class="bar-chart">
+            <div class="bar-chart" role="img" aria-label="Bar chart showing earthquake counts by magnitude range">
               @for (range of magRanges(); track range.label) {
                 <div class="bar-row">
-                  <span class="bar-label">{{ range.label }}</span>
-                  <div class="bar-track">
+                  <span class="bar-label" id="mag-label-{{ range.label }}">{{ range.label }}</span>
+                  <div class="bar-track" role="meter"
+                       [attr.aria-valuenow]="range.count"
+                       [attr.aria-valuemin]="0"
+                       [attr.aria-labelledby]="'mag-label-' + range.label">
                     <div
                       class="bar-fill"
                       [style.width.%]="range.percent"
@@ -33,9 +36,9 @@ import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner
                 </div>
               }
             </div>
-          </div>
+          </section>
 
-          <div class="stat-section">
+          <section class="stat-section" aria-label="Summary statistics">
             <h2 class="section-title">Summary</h2>
             <div class="summary-grid">
               <div class="summary-item">
@@ -55,13 +58,15 @@ import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner
                 <span class="summary-label">Tsunami Warnings</span>
               </div>
             </div>
-          </div>
+          </section>
 
-          <div class="stat-section">
+          <section class="stat-section" aria-label="24-hour timeline">
             <h2 class="section-title">Last 24 Hours Timeline</h2>
-            <div class="timeline">
+            <div class="timeline" role="img" aria-label="Bar chart showing earthquake frequency over the last 24 hours">
               @for (hour of hourlyTimeline(); track hour.hour) {
-                <div class="timeline-bar" [title]="hour.hour + ':00 — ' + hour.count + ' events'">
+                <div class="timeline-bar"
+                     [attr.aria-label]="hour.hour + ':00, ' + hour.count + ' events'"
+                     [title]="hour.hour + ':00 — ' + hour.count + ' events'">
                   <div
                     class="timeline-fill"
                     [style.height.%]="hour.percent">
@@ -72,7 +77,7 @@ import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner
                 </div>
               }
             </div>
-          </div>
+          </section>
         </div>
       }
     </div>

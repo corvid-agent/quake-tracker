@@ -12,9 +12,9 @@ import { FormsModule } from '@angular/forms';
       <h1 class="page-title">Settings</h1>
 
       <!-- Notifications -->
-      <div class="settings-card">
-        <h2 class="section-title">
-          <svg class="section-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <section class="settings-card" aria-labelledby="notif-heading">
+        <h2 class="section-title" id="notif-heading">
+          <svg aria-hidden="true" class="section-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
             <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
           </svg>
@@ -23,28 +23,31 @@ import { FormsModule } from '@angular/forms';
         <p class="section-desc">Get browser alerts when earthquakes above your magnitude threshold occur near your location.</p>
 
         @if (notificationService.permissionState() === 'unavailable') {
-          <div class="status-banner status-error">
+          <div class="status-banner status-error" role="alert">
             Your browser does not support the Notifications API.
           </div>
         } @else if (notificationService.permissionState() === 'denied') {
-          <div class="status-banner status-error">
+          <div class="status-banner status-error" role="alert">
             Notifications are blocked. Please allow notifications for this site in your browser settings.
           </div>
         } @else {
-          <label class="toggle-option">
-            <span>Enable earthquake alerts</span>
-            <div
+          <div class="toggle-option">
+            <span id="notif-toggle-label">Enable earthquake alerts</span>
+            <button
               class="toggle"
+              role="switch"
+              [attr.aria-checked]="notificationService.enabled()"
+              aria-labelledby="notif-toggle-label"
               [class.active]="notificationService.enabled()"
               (click)="notificationService.toggleEnabled(!notificationService.enabled())">
               <div class="toggle-thumb"></div>
-            </div>
-          </label>
+            </button>
+          </div>
 
           @if (notificationService.enabled()) {
             <div class="notification-settings">
-              <div class="status-banner" [class.status-active]="notificationService.hasLocation()" [class.status-warning]="notificationService.locationError()">
-                <span class="status-dot" [class.active]="notificationService.hasLocation()"></span>
+              <div class="status-banner" role="status" [class.status-active]="notificationService.hasLocation()" [class.status-warning]="notificationService.locationError()">
+                <span class="status-dot" aria-hidden="true" [class.active]="notificationService.hasLocation()"></span>
                 {{ notificationService.statusText() }}
               </div>
 
@@ -55,16 +58,18 @@ import { FormsModule } from '@angular/forms';
               }
 
               <div class="notification-control">
-                <label class="control-label">Minimum magnitude</label>
+                <label for="notif-mag-threshold" class="control-label">Minimum magnitude</label>
                 <div class="range-control">
                   <input
+                    id="notif-mag-threshold"
                     type="range"
                     [min]="1"
                     [max]="8"
                     [step]="0.5"
+                    aria-label="Notification minimum magnitude threshold"
                     [ngModel]="notificationService.magnitudeThreshold()"
                     (ngModelChange)="notificationService.setMagnitudeThreshold($event)" />
-                  <div class="range-labels">
+                  <div class="range-labels" aria-hidden="true">
                     <span>1.0</span>
                     <span class="range-current">M{{ notificationService.magnitudeThreshold().toFixed(1) }}+</span>
                     <span>8.0</span>
@@ -73,16 +78,18 @@ import { FormsModule } from '@angular/forms';
               </div>
 
               <div class="notification-control">
-                <label class="control-label">Alert radius</label>
+                <label for="notif-radius" class="control-label">Alert radius</label>
                 <div class="range-control">
                   <input
+                    id="notif-radius"
                     type="range"
                     [min]="50"
                     [max]="2000"
                     [step]="50"
+                    aria-label="Notification alert radius in kilometers"
                     [ngModel]="notificationService.radiusKm()"
                     (ngModelChange)="notificationService.setRadiusKm($event)" />
-                  <div class="range-labels">
+                  <div class="range-labels" aria-hidden="true">
                     <span>50 km</span>
                     <span class="range-current">{{ notificationService.radiusKm() }} km</span>
                     <span>2000 km</span>
@@ -101,13 +108,14 @@ import { FormsModule } from '@angular/forms';
             </div>
           }
         }
-      </div>
+      </section>
 
       <!-- Feed Selection -->
-      <div class="settings-card">
-        <h2 class="section-title">Feed Selection</h2>
+      <section class="settings-card" aria-labelledby="feed-heading">
+        <h2 class="section-title" id="feed-heading">Feed Selection</h2>
         <p class="section-desc">Choose the time window for earthquake data.</p>
-        <div class="feed-options">
+        <fieldset class="feed-options">
+          <legend class="sr-only">Time range for earthquake data</legend>
           @for (option of feedOptions; track option.value) {
             <label class="radio-option" [class.active]="filterService.timeRange() === option.value">
               <input
@@ -122,12 +130,12 @@ import { FormsModule } from '@angular/forms';
               </div>
             </label>
           }
-        </div>
-      </div>
+        </fieldset>
+      </section>
 
       <!-- Magnitude Filter -->
-      <div class="settings-card">
-        <h2 class="section-title">Magnitude Filter</h2>
+      <section class="settings-card" aria-labelledby="mag-heading">
+        <h2 class="section-title" id="mag-heading">Magnitude Filter</h2>
         <p class="section-desc">Filter earthquakes by minimum magnitude.</p>
         <div class="range-control">
           <input
@@ -135,28 +143,35 @@ import { FormsModule } from '@angular/forms';
             [min]="0"
             [max]="9"
             [step]="0.5"
+            aria-label="Minimum magnitude filter"
             [ngModel]="filterService.minMagnitude()"
             (ngModelChange)="filterService.setMagnitudeRange($event, filterService.maxMagnitude())" />
-          <div class="range-labels">
+          <div class="range-labels" aria-hidden="true">
             <span>0</span>
             <span class="range-current">{{ filterService.minMagnitude().toFixed(1) }}+</span>
             <span>9</span>
           </div>
         </div>
-      </div>
+      </section>
 
       <!-- Auto-Refresh -->
-      <div class="settings-card">
-        <h2 class="section-title">Auto-Refresh</h2>
+      <section class="settings-card" aria-labelledby="refresh-heading">
+        <h2 class="section-title" id="refresh-heading">Auto-Refresh</h2>
         <p class="section-desc">Automatically refresh earthquake data periodically.</p>
-        <label class="toggle-option">
-          <span>Enable auto-refresh</span>
-          <div class="toggle" [class.active]="autoRefresh()" (click)="autoRefresh.set(!autoRefresh())">
+        <div class="toggle-option">
+          <span id="refresh-toggle-label">Enable auto-refresh</span>
+          <button
+            class="toggle"
+            role="switch"
+            [attr.aria-checked]="autoRefresh()"
+            aria-labelledby="refresh-toggle-label"
+            [class.active]="autoRefresh()"
+            (click)="autoRefresh.set(!autoRefresh())">
             <div class="toggle-thumb"></div>
-          </div>
-        </label>
+          </button>
+        </div>
         <p class="coming-soon">Coming soon</p>
-      </div>
+      </section>
     </div>
   `,
   styles: [`
@@ -272,14 +287,38 @@ import { FormsModule } from '@angular/forms';
       cursor: pointer;
     }
 
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    fieldset {
+      border: none;
+      padding: 0;
+      margin: 0;
+    }
+
     .toggle {
       width: 48px;
-      height: 26px;
+      height: 28px;
       background: var(--bg-raised);
       border: 1px solid var(--border);
-      border-radius: 13px;
+      border-radius: 14px;
       position: relative;
       transition: all 0.2s;
+      cursor: pointer;
+      min-height: 44px;
+      min-width: 44px;
+      display: flex;
+      align-items: center;
+      padding: 0 2px;
     }
 
     .toggle.active {
@@ -292,10 +331,8 @@ import { FormsModule } from '@angular/forms';
       height: 20px;
       background: var(--text-primary);
       border-radius: 50%;
-      position: absolute;
-      top: 2px;
-      left: 2px;
       transition: transform 0.2s;
+      flex-shrink: 0;
     }
 
     .toggle.active .toggle-thumb {
