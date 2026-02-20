@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/preview.png" alt="quake-tracker preview" width="100%"></p>
+
 # Quake Tracker
 
 Real-time earthquake tracker with interactive map, magnitude filtering, and seismic analytics powered by USGS data.
