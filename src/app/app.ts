@@ -16,6 +16,7 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
       <nav class="desktop-nav">
         <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Dashboard</a>
         <a routerLink="/stats" routerLinkActive="active">Stats</a>
+        <a routerLink="/compare" routerLinkActive="active">Compare</a>
         <a routerLink="/settings" routerLinkActive="active">Settings</a>
       </nav>
     </header>
@@ -36,6 +37,12 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
           <rect x="3" y="12" width="4" height="8"/><rect x="10" y="8" width="4" height="12"/><rect x="17" y="4" width="4" height="16"/>
         </svg>
         <span>Stats</span>
+      </a>
+      <a routerLink="/compare" routerLinkActive="active" class="nav-item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 20V10M12 20V4M6 20v-6"/>
+        </svg>
+        <span>Compare</span>
       </a>
       <a routerLink="/settings" routerLinkActive="active" class="nav-item">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
