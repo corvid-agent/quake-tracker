@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { QuakeService } from '../../core/services/quake.service';
 import { FilterService } from '../../core/services/filter.service';
 import { MagnitudeBadgeComponent } from '../../shared/components/magnitude-badge.component';
+import { QuakeMapComponent } from '../../shared/components/quake-map.component';
 import { RelativeTimePipe } from '../../shared/pipes/relative-time.pipe';
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner.component';
 import { FormsModule } from '@angular/forms';
@@ -10,7 +11,7 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [MagnitudeBadgeComponent, RelativeTimePipe, LoadingSpinnerComponent, FormsModule],
+  imports: [MagnitudeBadgeComponent, QuakeMapComponent, RelativeTimePipe, LoadingSpinnerComponent, FormsModule],
   template: `
     <div class="dashboard">
       <div class="controls" role="toolbar" aria-label="Earthquake filters">
@@ -57,6 +58,10 @@ import { FormsModule } from '@angular/forms';
           <span class="stat-label">Avg Depth</span>
         </div>
       </div>
+
+      @if (!quakeService.loading() && !quakeService.error() && filteredQuakes().length > 0) {
+        <app-quake-map [quakes]="filteredQuakes()" />
+      }
 
       @if (quakeService.loading()) {
         <app-loading-spinner />

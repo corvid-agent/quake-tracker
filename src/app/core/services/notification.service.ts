@@ -302,7 +302,7 @@ export class NotificationService implements OnDestroy {
     });
   }
 
-  private sendNotification(quake: Earthquake, distanceKm: number): void {
+  private async sendNotification(quake: Earthquake, distanceKm: number): Promise<void> {
     if (!this.isNotificationApiAvailable()) return;
     if (Notification.permission !== 'granted') return;
 
@@ -313,24 +313,31 @@ export class NotificationService implements OnDestroy {
     const title = `Earthquake M${quake.magnitude.toFixed(1)}`;
     const body = `${quake.place}\nDistance: ${distanceStr} away\nDepth: ${quake.depth.toFixed(1)} km`;
 
-    try {
-      const notification = new Notification(title, {
-        body,
-        tag: quake.id,
-        icon: 'data:image/svg+xml,' + encodeURIComponent(
-          '<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="%234ecdc4" stroke-width="2"><path d="M2 12h3l3-9 4 18 4-18 3 9h3"/></svg>',
-        ),
-        requireInteraction: quake.magnitude >= 6,
-      });
+    const options: NotificationOptions = {
+      body,
+      tag: quake.id,
+      icon: '/icons/icon-192.svg',
+      requireInteraction: quake.magnitude >= 6,
+    };
 
-      notification.onclick = () => {
-        window.focus();
-        window.location.hash = '';
-        window.location.href = `/quake/${quake.id}`;
-        notification.close();
-      };
+    try {
+      // Prefer service worker notifications (work when tab is in background)
+      const registration = await navigator.serviceWorker?.getRegistration();
+      if (registration) {
+        await registration.showNotification(title, {
+          ...options,
+          data: { url: `/quake/${quake.id}` },
+        });
+      } else {
+        const notification = new Notification(title, options);
+        notification.onclick = () => {
+          window.focus();
+          window.location.href = `/quake/${quake.id}`;
+          notification.close();
+        };
+      }
     } catch {
-      // Some browsers restrict Notification constructor usage
+      // Some browsers restrict Notification usage
     }
   }
 }
