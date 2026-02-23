@@ -22,6 +22,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - run: npx ng test --watch=false
       - run: npx ng build --base-href /quake-tracker/
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
