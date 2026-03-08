@@ -1,5 +1,7 @@
 import {
   Component,
+  inject,
+  Injector,
   input,
   effect,
   ElementRef,
@@ -93,6 +95,7 @@ export class QuakeMapComponent implements AfterViewInit, OnDestroy {
 
   readonly mapEl = viewChild.required<ElementRef<HTMLDivElement>>('mapEl');
 
+  private readonly injector = inject(Injector);
   private map: L.Map | null = null;
   private markerLayer: L.LayerGroup | null = null;
   private plateLayer: L.GeoJSON | null = null;
@@ -105,12 +108,12 @@ export class QuakeMapComponent implements AfterViewInit, OnDestroy {
     effect(() => {
       const quakes = this.quakes();
       this.updateMarkers(quakes);
-    });
+    }, { injector: this.injector });
 
     effect(() => {
       const show = this.showPlates();
       this.togglePlates(show);
-    });
+    }, { injector: this.injector });
   }
 
   ngOnDestroy(): void {
