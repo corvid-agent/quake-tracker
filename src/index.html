@@ -13,6 +13,16 @@
   <link rel="apple-touch-icon" href="icons/icon-192.svg">
 </head>
 <body>
+  <script>
+    // SPA redirect for GitHub Pages — restore path saved by 404.html
+    (function() {
+      var redirect = sessionStorage.redirect;
+      delete sessionStorage.redirect;
+      if (redirect && redirect !== location.pathname) {
+        history.replaceState(null, '', redirect);
+      }
+    })();
+  </script>
   <a class="skip-link" href="#main-content">Skip to main content</a>
   <app-root></app-root>
 </body>

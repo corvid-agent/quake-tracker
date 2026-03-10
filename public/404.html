@@ -5,9 +5,15 @@
   <title>QuakeTracker</title>
   <script>
     // SPA redirect for GitHub Pages
-    sessionStorage.redirect = location.href;
+    // Stores the current path so index.html can restore it via history.replaceState
+    var pathSegmentsToKeep = 1; // keep '/quake-tracker' prefix
+    var l = window.location;
+    sessionStorage.redirect = l.pathname + l.search + l.hash;
+    l.replace(
+      l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+      l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/'
+    );
   </script>
-  <meta http-equiv="refresh" content="0;URL='/quake-tracker/'">
 </head>
 <body></body>
 </html>
